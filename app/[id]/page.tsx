@@ -1,8 +1,8 @@
-import { redirect } from 'next/navigation';
-import { editTask } from '../actions/tasks';
-import FormTasks, { FormTasksType } from '@/components/FormTasks';
+import { redirect } from "next/navigation";
+import { editTask } from "../actions/tasks";
+import FormTasks, { FormTasksType } from "@/components/FormTasks";
 
-export default async function Home({
+export default async function EditPage({
   searchParams,
 }: {
   searchParams: Promise<{ id?: string; title?: string; description?: string }>;
@@ -10,20 +10,20 @@ export default async function Home({
   const { id, title, description } = await searchParams;
 
   async function handleSubmit(data: FormTasksType) {
-    'use server';
+    "use server";
     await editTask(data);
-    redirect('/');
+    redirect("/");
   }
 
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold">📝 Lista de Tarefas</h1>
+      <h1 className="text-2xl font-bold">✏️ Editar Tarefa</h1>
 
       <FormTasks
         defaultValues={{
           id: id ? parseInt(id) : undefined,
-          title: title || '',
-          description: description || '',
+          title: title || "",
+          description: description || "",
         }}
         onSubmit={handleSubmit}
       />

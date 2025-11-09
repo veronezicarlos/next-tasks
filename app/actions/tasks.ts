@@ -4,6 +4,8 @@ import { FormTasksType } from '@/components/FormTasks';
 import API from '@/lib/API';
 import { revalidatePath } from 'next/cache';
 
+
+
 export async function getTasks() {
   try {
     const { data } = await API.get('/tasks');
@@ -36,11 +38,12 @@ export async function getTaskById(id: number) {
 
 export async function editTask(formData: FormTasksType) {
   try {
+    console.log("🔍 Editando tarefa:", formData);
     const { id, title, description } = formData;
     await API.put(`/tasks/${id}`, { title, description });
-    revalidatePath('/');
+    revalidatePath("/");
   } catch (error) {
-    console.error('Error editing task:', error);
+    console.error("Error editing task:", error);
   }
 }
 
@@ -65,4 +68,7 @@ export async function completeTask(formData: FormData) {
   } catch (err) {
     console.error('Erro ao completar:', err);
   }
+
+  
 }
+
