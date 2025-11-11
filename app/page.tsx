@@ -1,6 +1,8 @@
 'use client';
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import FormTasks, { FormTasksType } from "@/components/FormTasks";
 import DeleteButton from "@/components/DeleteButton";
 import { getTasks, createTask, completeTask } from "./actions/tasks";
@@ -12,18 +14,17 @@ type Task = {
   completed?: boolean;
 };
 
-export default function Home({
-  searchParams,
-}: {
-  searchParams: { id?: string; title?: string; description?: string };
-}) {
-  const { id, title, description } = searchParams;
+export default function Home() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const title = searchParams.get("title") || "";
+  const description = searchParams.get("description") || "";
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>(
     id ? 'pending' : 'all'
   );
 
-  
   async function loadTasks() {
     const data = await getTasks();
     setTasks(data);
@@ -33,14 +34,12 @@ export default function Home({
     loadTasks();
   }, []);
 
-  
   async function handleSubmit(data: FormTasksType) {
-    await createTask(data); 
-    setFilter('pending'); 
+    await createTask(data);
+    setFilter('pending');
     loadTasks();
   }
 
- 
   const filteredTasks = tasks.filter((t) => {
     if (filter === 'all') return true;
     if (filter === 'pending') return !t.completed;
@@ -54,13 +53,12 @@ export default function Home({
       <FormTasks
         defaultValues={{
           id: id ? parseInt(id) : undefined,
-          title: title || "",
-          description: description || "",
+          title,
+          description,
         }}
         onSubmit={handleSubmit}
       />
 
-     
       <div className="mt-4 flex gap-2">
         <button
           className={`px-4 py-2 rounded ${filter === 'all' ? 'bg-gray-400 text-white' : 'bg-gray-200'}`}
@@ -97,13 +95,12 @@ export default function Home({
 
             {!t.completed ? (
               <div className="flex gap-2">
-                <Link
-                  href={`/edit?id=${t.id}&title=${t.title}&description=${t.description}`}
-                  className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
-                >
-                  Editar
-                </Link>
-
+               <Link
+                 href={`/edit?id=${t.id}&title=${t.title}&description=${t.description}`}
+                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
+                  >
+                    Editar
+                  </Link>
                 <DeleteButton id={t.id} onDeleted={loadTasks} />
 
                 <form
